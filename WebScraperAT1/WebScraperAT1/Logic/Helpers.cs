@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace WebScraperAT1.Logic
@@ -38,22 +39,31 @@ namespace WebScraperAT1.Logic
         /// </summary>
         /// <param name="source">source code of website</param>
         /// <returns>list of strings containing links</returns>
-        internal static List<string> GetWebsiteLinks(string source)
+        internal static List<Link> GetWebsiteLinks(string source)
         {
             string[] separator = { "\r\n" };
 
             // split at \r\n
             var lines = source.Split(separator,10000, StringSplitOptions.RemoveEmptyEntries);
 
-            List<string> links = new List<string>();
+            List<Link> links = new List<Link>();
 
-            foreach (string line in lines)
-            {
-                if (line.Contains("<a href="))
-                {
-                    links.Add(line.Trim());
-                }
-            }
+            Regex ahref = new Regex("(?i)<a([^>]+)>(.+?)</a>");
+
+            foreach (var line in lines)
+	        {
+                var link = new Link();
+
+                var matches = Regex.Matches(line, "<a[^>]*? href=\"(?<url>[^\"]+)\"[^>]*?>(?<text>.*?)</a>", RegexOptions.Singleline);
+                
+                foreach (Match match in matches)
+	            {
+		            link.LinkAddress = match.Groups["url"].Value;
+                    link.LinkText = match.Groups["text"].Value;
+                    links.Add(link);
+	            }
+
+	        }
 
             return links;
         }
@@ -65,17 +75,26 @@ namespace WebScraperAT1.Logic
         /// <returns>string containing robots.txt file</returns>
         internal static object GetWebsiteRobotsTxt(string website)
         {
-            WebRequest request = HttpWebRequest.Create(website + "/robots.txt");
+            try
+            {
+                WebRequest request = HttpWebRequest.Create(website + "/robots.txt");
 
-            var response = request.GetResponse();
+                var response = request.GetResponse();
 
-            var stream = response.GetResponseStream();
+                var stream = response.GetResponseStream();
 
-            StreamReader reader = new StreamReader(stream);
+                StreamReader reader = new StreamReader(stream);
 
-            string robots = reader.ReadToEnd();
+                string robots = reader.ReadToEnd();
 
-            return robots;
+                return robots;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("There is no robots.txt file for this website. Error: " + ex.Message);
+                return null;
+            }
+
         }
     }
 }
