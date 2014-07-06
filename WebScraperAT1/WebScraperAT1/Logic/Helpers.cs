@@ -38,7 +38,7 @@ namespace WebScraperAT1.Logic
         /// </summary>
         /// <param name="source">source code of website</param>
         /// <returns>list of strings containing links</returns>
-        internal static List<string> FindWebsiteLinks(string source)
+        internal static List<string> GetWebsiteLinks(string source)
         {
             string[] separator = { "\r\n" };
 
@@ -47,7 +47,7 @@ namespace WebScraperAT1.Logic
 
             List<string> links = new List<string>();
 
-            foreach (var line in lines)
+            foreach (string line in lines)
             {
                 if (line.Contains("<a href="))
                 {
@@ -56,6 +56,26 @@ namespace WebScraperAT1.Logic
             }
 
             return links;
+        }
+
+        /// <summary>
+        /// gets websites robot.txt file, assumes it is in www.website.com/robots.txt
+        /// </summary>
+        /// <param name="website">website for request</param>
+        /// <returns>string containing robots.txt file</returns>
+        internal static object GetWebsiteRobotsTxt(string website)
+        {
+            WebRequest request = HttpWebRequest.Create(website + "/robots.txt");
+
+            var response = request.GetResponse();
+
+            var stream = response.GetResponseStream();
+
+            StreamReader reader = new StreamReader(stream);
+
+            string robots = reader.ReadToEnd();
+
+            return robots;
         }
     }
 }

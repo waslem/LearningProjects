@@ -14,16 +14,16 @@ namespace WebScraperAT1
     {
         static void Main(string[] args)
         {
+            string website = "http://www.westnet.com.au";
 
-            string source = Helpers.GetWebsiteSource("http://www.baycorp.com.au");
+            var source = Helpers.GetWebsiteSource(website);
 
-            List<string> links = Helpers.FindWebsiteLinks(source);
+            var robots = Helpers.GetWebsiteRobotsTxt(website);
 
-            foreach (var link in links)
-            {
-                Console.WriteLine(link);
-            }
+            var links = Helpers.GetWebsiteLinks(source);
 
+
+            Console.WriteLine(robots);
             Console.WriteLine();
         }
     }
