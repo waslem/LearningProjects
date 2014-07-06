@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -52,17 +53,16 @@ namespace WebScraperAT1.Logic
 
             foreach (var line in lines)
 	        {
-                var link = new Link();
+                Match match = Regex.Match(line, "<a[^>]*? href=\"(?<url>[^\"]+)\"[^>]*?>(?<text>.*?)</a>", RegexOptions.Singleline);
 
-                var matches = Regex.Matches(line, "<a[^>]*? href=\"(?<url>[^\"]+)\"[^>]*?>(?<text>.*?)</a>", RegexOptions.Singleline);
-                
-                foreach (Match match in matches)
-	            {
-		            link.LinkAddress = match.Groups["url"].Value;
+                if (match.Success)
+                {
+                    Link link = new Link();
+                    link.LinkAddress = match.Groups["url"].Value;
                     link.LinkText = match.Groups["text"].Value;
-                    links.Add(link);
-	            }
 
+                    links.Add(link);
+                }
 	        }
 
             return links;
@@ -75,6 +75,7 @@ namespace WebScraperAT1.Logic
         /// <returns>string containing robots.txt file</returns>
         internal static object GetWebsiteRobotsTxt(string website)
         {
+            /// try catch as website may not have "url/robots.txt"
             try
             {
                 WebRequest request = HttpWebRequest.Create(website + "/robots.txt");

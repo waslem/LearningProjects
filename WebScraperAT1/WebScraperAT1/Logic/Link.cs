@@ -10,5 +10,11 @@ namespace WebScraperAT1.Logic
     {
         public string LinkText { get; set; }
         public string LinkAddress { get; set; }
+
+        public Link()
+        {
+            LinkText = "";
+            LinkAddress = "";
+        }
     }
 }
