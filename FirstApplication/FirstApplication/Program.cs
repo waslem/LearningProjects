@@ -10,6 +10,18 @@ namespace FirstApplication
     {
         static void Main(string[] args)
         {
+            if (args.Length > 0)
+            {
+                string name = args[0];
+                Console.WriteLine("Hi " + name);
+            }
+            else
+            {
+                Console.WriteLine("Hi Random");
+            }
+
+            Console.ReadLine();
+
         }
     }
 }
