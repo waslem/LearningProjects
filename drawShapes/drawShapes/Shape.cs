@@ -75,4 +75,11 @@ namespace drawShapes
             base.Draw();
         }
     }
+
+    public struct Complex
+    {
+        public int Real;
+        public int Imaginary;
+
+    }
 }
